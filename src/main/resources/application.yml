@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: SpringCloud1
+  main:
+    web-application-type: reactive
+  cloud:
+    gateway:
+      filter:
+        add-request-header:
+          enabled: true
+        remove-hop-by-hop:
+          headers: Cache-Control,Postman-Token,args,Content-Length,Host,User-Agent,Accept,Accept-Encoding,Connection,timestamp,trace
+  server:
+    netty:
+      max-http-header-size: 10KB
+    tomcat:
+      max-http-request-header-size: 10KB
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.cloud.gateway: DEBUG
+
+
