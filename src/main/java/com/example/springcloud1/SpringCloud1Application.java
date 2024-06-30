@@ -17,6 +17,8 @@ import reactor.core.publisher.Mono;
 import org.springframework.cloud.gateway.support.ServerWebExchangeUtils;
 import org.springframework.cloud.gateway.route.Route;
 
+import java.util.Map;
+
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
 @EnableConfigurationProperties(UriConfiguration.class)
 public class SpringCloud1Application {
@@ -41,6 +43,42 @@ public class SpringCloud1Application {
                 .route("route4", r -> r.path("/api/reqheader")
                         .filters(f -> f.addRequestHeader("Hello", "World"))
                         .uri(loginURl))
+                .route("route5", r -> r.path("/api/editrequest")
+                        .filters(f -> f.addRequestHeader("Hello", "World")
+                                .modifyRequestBody(Map.class, User.class, (exchange, map) -> {
+                                    String username = map.containsKey("username") ? (String) map.get("username") : "";
+                                    Long id= Long.valueOf("100");
+                                    String password = "******";
+                                    String address = "JPN";
+                                    Integer age = map.containsKey("age") ? (Integer) map.get("age") : 18;
+                                    User user = new User( username.toUpperCase(), password, address,age);
+                                    return Mono.just(user);
+                                }))
+                        .uri(loginURl))
+
+                .route("route6", r -> r.path("/api/editresponse")
+                        .filters(f -> f
+                                .addRequestHeader("Hello", "World")
+                                .modifyResponseBody(Map.class, User.class, (exchange, map) -> {
+                                    String username = map.containsKey("username") ? (String) map.get("username") : "";
+                                    String password = map.containsKey("password") ? (String) map.get("password") : null;
+                                    String address = "USA";
+                                    Integer age = 18;
+                                    User user = new User( username.toUpperCase(), password, address,age);
+                                    return Mono.just(user);
+                                }))
+                        .uri(loginURl))
+                .route("route7", r -> r.path("/api/adduser")
+                        .filters(f -> f.addRequestHeader("Hello", "World")
+                        .modifyRequestBody(Map.class, User.class, (exchange, map) -> {
+                            String username = map.containsKey("username") ? (String) map.get("username") : "";
+                            String password = map.containsKey("password") ? (String) map.get("password") : "";
+                            String address = "JPN";
+                            Integer age = map.containsKey("age") ? (Integer) map.get("age") : 18;
+                            User user = new User( username.toUpperCase(), password, address,age);
+                            return Mono.just(user);
+                        }))
+                        .uri(loginURl))
                 .build();
     }
 
@@ -51,12 +89,14 @@ public class SpringCloud1Application {
             String routeId = route != null ? route.getId() : "no-route-found";
             ServerHttpRequest modifiedRequest = exchange.getRequest()
                     .mutate()
-                    .header("custom-api-header", routeId) // Set route ID as header
+                    .header("custom-api-header", routeId)
+                    .header("project-name", "SpringCloud")
                     .build();
             ServerWebExchange modifiedExchange = exchange.mutate().request(modifiedRequest).build();
             return chain.filter(modifiedExchange);
         };
     }
+
 
     @Bean
     public GlobalFilter customGlobalPostFilter() {
@@ -65,9 +105,26 @@ public class SpringCloud1Application {
                 .map(serverWebExchange -> {
                     serverWebExchange.getResponse().getHeaders().set("CUSTOM-RESPONSE-HEADER",
                             HttpStatus.OK.equals(serverWebExchange.getResponse().getStatusCode()) ? "It worked" : "It did not work");
+                    serverWebExchange.getResponse().getHeaders().set("project-name", "SpringCloud");
+
                     return serverWebExchange;
                 })
                 .then();
+    }
+
+
+    @Bean
+    public GlobalFilter customProjectNameEditFilter() {
+        return (exchange, chain) -> {
+            Route route = exchange.getAttribute(ServerWebExchangeUtils.GATEWAY_ROUTE_ATTR);
+            String routeId = route != null ? route.getId() : "no-route-found";
+            ServerHttpRequest modifiedRequest = exchange.getRequest()
+                    .mutate()
+                    .header("custom-api-header", routeId) // Set route ID as header
+                    .build();
+            ServerWebExchange modifiedExchange = exchange.mutate().request(modifiedRequest).build();
+            return chain.filter(modifiedExchange);
+        };
     }
 
     @Bean

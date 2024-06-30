@@ -3,16 +3,28 @@ package com.example.springcloud1;
 
 import jakarta.persistence.*;
 
-@Entity
-@Table(name = "user", schema = "usermanagement")
+
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
+
+
+    private Long id;
+    private Integer age;
     private String username;
     private String password;
+    private String address ;
+
+
+
+    public User( String username, String password, String address,Integer age)
+    {
+        this.username = username;
+        this.password = password;
+        this.address =  address;
+        this.age = age;
+    }
+
 
     public Long getId() {
         return id;
@@ -36,5 +48,21 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getAddress() {
+        return this.address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
     }
 }
