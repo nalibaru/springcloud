@@ -3,7 +3,7 @@ package com.example.springcloud1;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties
-class UriConfiguration {
+public class UriConfiguration {
     private String httpbin = "http://httpbin.org:80";
     private String loginbin = "http://localhost:8082";
     private String otherbin = "http://localhost:8081";

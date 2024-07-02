@@ -1,13 +1,8 @@
 package com.example.springcloud1;
 
 
-import jakarta.persistence.*;
-
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 public class User {
-
-
-
 
     private Long id;
     private Integer age;
@@ -15,7 +10,10 @@ public class User {
     private String password;
     private String address ;
 
-
+    public User(@JsonProperty("username") String username, @JsonProperty("password") String password) {
+        this.username = username;
+        this.password = password;
+    }
 
     public User( String username, String password, String address,Integer age)
     {
@@ -25,6 +23,10 @@ public class User {
         this.age = age;
     }
 
+    public User(Long id)
+    {
+        this.id = id;
+    }
 
     public Long getId() {
         return id;
