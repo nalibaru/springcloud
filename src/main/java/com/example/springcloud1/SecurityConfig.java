@@ -15,7 +15,7 @@ public class SecurityConfig {
         http
                 .authorizeExchange(exchanges ->
                         exchanges
-                                .pathMatchers( "/authenticate","/api/request","/api/fetchuser","/api/reqheader","/api/editrequest","/api/editresponse","/api/adduser","/api/editreqid").permitAll()
+                                .pathMatchers( "/authenticate","/api/request","/api/fetchuser","/api/reqheader","/api/editrequest","/api/editresponse","/api/adduser","/api/editreqid","/api/fetchreqid","/api/setreqheader","/api/setresheader","/api/remreqheader","/api/remresheader","/api/removereqid","/api/redirect","/v1/request","/api/rewriteres","/api/rewritereqid").permitAll()
                                 .anyExchange().authenticated()
                 )
                 .csrf(csrf -> csrf.disable());

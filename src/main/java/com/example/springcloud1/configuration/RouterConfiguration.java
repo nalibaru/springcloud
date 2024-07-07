@@ -14,6 +14,7 @@ import reactor.core.publisher.Mono;
 @Configuration
 public class RouterConfiguration {
 
+    //Prefilter for all services before sending to downstream
     @Bean
     public GlobalFilter customGlobalFilter() {
         return (exchange, chain) -> {
@@ -21,7 +22,6 @@ public class RouterConfiguration {
             String routeId = route != null ? route.getId() : "no-route-found";
             ServerHttpRequest modifiedRequest = exchange.getRequest()
                     .mutate()
-                    .header("custom-api-header", routeId)
                     .header("project-name", "SpringCloud")
                     .build();
             ServerWebExchange modifiedExchange = exchange.mutate().request(modifiedRequest).build();
@@ -29,7 +29,7 @@ public class RouterConfiguration {
         };
     }
 
-
+    //Postfilter for all services before sending to client
     @Bean
     public GlobalFilter customGlobalPostFilter() {
         return (exchange, chain) -> chain.filter(exchange)
@@ -58,6 +58,7 @@ public class RouterConfiguration {
             return chain.filter(modifiedExchange);
         };
     }
+
 
     @Bean
     public GlobalFilter loggingFilter() {
